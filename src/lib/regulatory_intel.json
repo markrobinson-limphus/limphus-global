@@ -1,0 +1,72 @@
+{
+  "regions": {
+    "US-NY": {
+      "name": "New York",
+      "framework": "NY RPC 1.6(c)",
+      "threat": "Professional malpractice; mandatory MFA/encryption as duty of competence.",
+      "hook": "NY RPC 1.6(c) now treats cybersecurity as a professional duty. Missing DMARC/SPF exposes your firm to malpractice claims and disciplinary action.",
+      "fineExposure": "Malpractice and bar discipline.",
+      "exposureAmount": 500000,
+      "violationHook2026": "NY RPC 1.6(c): Mandatory MFA/encryption as duty of competence."
+    },
+    "US-CA": {
+      "name": "California",
+      "framework": "CCPA Jan 2026 Update",
+      "threat": "Automated audits; $2,500–$7,500 per violation.",
+      "hook": "The CCPA 2026 update enables automated audits. Unauthenticated email and weak privacy controls increase per-violation exposure.",
+      "fineExposure": "$2,500–$7,500 per violation.",
+      "exposureAmount": 7500,
+      "violationHook2026": "CCPA Jan 2026: Automated audits; per-violation penalties."
+    },
+    "US-NYDFS": {
+      "name": "NYC Financial",
+      "framework": "NYDFS Part 500 / Section 500.12",
+      "threat": "Section 500.12 (MFA Migration): Missing MFA for any info system access (mandatory as of Nov 2025). $2M+ civil penalty.",
+      "hook": "Under NYDFS Section 500.12, missing MFA and email authentication (DMARC/SPF) is now a $2M+ civil penalty exposure. 2026 enforcement is active.",
+      "fineExposure": "$2,000,000+ Civil Penalty",
+      "exposureAmount": 2000000,
+      "violationHook2026": "NYDFS Section 500.12 (MFA Migration): Missing MFA for any info system access (Mandatory as of Nov 2025)."
+    },
+    "UK": {
+      "name": "UK / London",
+      "framework": "SRA Code of Conduct 2.1 / NIS2",
+      "threat": "Article 21: Failure to implement Basic Cyber Hygiene (DMARC/SPF/MFA). €10M or 2% of global turnover.",
+      "hook": "NIS2 Article 21 requires basic cyber hygiene including email authentication. Failure can result in €10,000,000 or 2% of global annual turnover. SRA enforcement runs in parallel.",
+      "fineExposure": "€10,000,000 or 2% of Global Turnover",
+      "exposureAmount": 10000000,
+      "violationHook2026": "NIS2 Article 21: Failure to implement Basic Cyber Hygiene (DMARC/SPF/MFA)."
+    },
+    "ON": {
+      "name": "Ontario",
+      "framework": "LawPRO Practice Standards",
+      "threat": "Wire fraud liability; insurer expectations.",
+      "hook": "LawPRO has highlighted missing SPF/DMARC as a primary vector for wire fraud targeting Ontario firms. Baseline controls are expected by insurers.",
+      "fineExposure": "Wire fraud liability; professional indemnity implications.",
+      "exposureAmount": 500000,
+      "violationHook2026": "LawPRO Practice Standards: Wire fraud and insurer expectations for baseline controls."
+    },
+    "HIPAA": {
+      "name": "Healthcare (US)",
+      "framework": "HIPAA Security Rule 2026 (Modernized)",
+      "threat": "2026 Modernization Rule: Failure to technically enforce encryption for all ePHI in transit. Tier 4 Willful Neglect annual cap.",
+      "hook": "HIPAA 2026 Modernization Rule mandates encryption of all ePHI in transit. Unauthenticated email creates audit findings and OCR exposure—up to Tier 4 willful neglect cap.",
+      "fineExposure": "$2,134,831 Annual Cap (Tier 4 Willful Neglect)",
+      "exposureAmount": 2134831,
+      "violationHook2026": "2026 Modernization Rule: Failure to technically enforce encryption for all ePHI in transit."
+    },
+    "PHIPA": {
+      "name": "Healthcare (Ontario)",
+      "framework": "PHIPA",
+      "threat": "Data integrity and breach reporting.",
+      "hook": "PHIPA requires safeguards for personal health information. Email authentication is a baseline control for integrity and breach prevention.",
+      "fineExposure": "PHIPA penalties and breach reporting.",
+      "exposureAmount": 250000,
+      "violationHook2026": "PHIPA: Safeguards for personal health information; breach reporting."
+    }
+  },
+  "industryDefaults": {
+    "legal": ["US-NY", "US-CA", "UK", "ON"],
+    "healthcare": ["HIPAA", "PHIPA"],
+    "finance": ["US-NYDFS", "UK"]
+  }
+}

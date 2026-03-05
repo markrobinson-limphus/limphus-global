@@ -1,0 +1,151 @@
+// Limphus Global — Multi-tenant SaaS for compliance lead-gen
+// Postgres + Prisma
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// Tenant = one MSP (or your own org). Isolated data.
+model Tenant {
+  id        String   @id @default(cuid())
+  name      String
+  clerkOrgId String? @unique // Clerk organization ID for multi-tenant
+  workerManualOverride Boolean @default(false) // when true, bots skip cycles so you can take over
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  users      TenantUser[]
+  leads      Lead[]
+  drafts     Draft[]
+  branding   Branding?
+  subscriptions Subscription[]
+  actionLogs ActionLog[]
+}
+
+// Link users to tenants (Clerk userId)
+model TenantUser {
+  id        String   @id @default(cuid())
+  tenantId  String
+  clerkUserId String
+  role      String   @default("member") // owner | admin | member
+  createdAt DateTime @default(now())
+
+  tenant Tenant @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+
+  @@unique([tenantId, clerkUserId])
+  @@index([clerkUserId])
+}
+
+enum LeadWorkflowStatus {
+  HUNTED   // Found by Hunter, not yet in audit queue
+  READY
+  AUDITING
+  AUDITED  // Audit complete; Closer creates draft
+  EMAILED
+  WAITING
+  CONTACTED  // Sovereign approved and sent email
+  REPLIED
+}
+
+// Global leads table — country, industry, compliance framework
+model Lead {
+  id                 String   @id @default(cuid())
+  tenantId           String
+  domain             String
+  countryCode        String   @default("US") // US, UK, CA, etc.
+  industry           String   @default("legal") // legal | healthcare | finance
+  complianceFramework String?  // NIS2, HIPAA2026, NYDFS, SRA, LawPRO
+  contactEmail       String?
+  auditStatus        String   @default("pending") // pending | audited | failed
+  workflowStatus     LeadWorkflowStatus @default(READY) // pipeline stage
+  regulatoryRiskScore Float?   // 0–10
+  mapRiskScore        Int?     // 0-100 for map coloring
+  riskLevel           String?  // HIGH | MEDIUM | LOW
+  httpsOk            Boolean?
+  privacyPolicyFound Boolean?
+  spfOk              Boolean?
+  dmarcOk            Boolean?
+  dkimOk             Boolean?
+  auditResultJson    Json?    // full audit payload
+  createdAt          DateTime @default(now())
+  updatedAt          DateTime @updatedAt
+
+  tenant Tenant  @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  drafts Draft[]
+  actionLogs ActionLog[]
+
+  @@index([tenantId])
+  @@index([tenantId, auditStatus])
+  @@index([tenantId, workflowStatus])
+  @@index([countryCode, industry])
+  @@unique([tenantId, domain])
+}
+
+// Drafts — AI-generated outreach per lead
+model Draft {
+  id            String   @id @default(cuid())
+  tenantId      String
+  leadId        String
+  status        String   @default("draft") // draft | reviewed | approved
+  draftJson     Json     // { subject, body } with regulatory hooks
+  emailSecurity Json?    // { spfOk, dmarcOk, dkimOk }
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+  approvedAt    DateTime?
+
+  tenant Tenant @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  lead   Lead   @relation(fields: [leadId], references: [id], onDelete: Cascade)
+
+  @@index([tenantId])
+  @@index([tenantId, status])
+}
+
+// Per-tenant branding for PDFs and white-label
+model Branding {
+  id        String   @id @default(cuid())
+  tenantId  String   @unique
+  firmName  String?
+  logoUrl   String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  tenant Tenant @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+}
+
+// Stripe subscriptions (placeholder for tiers)
+model Subscription {
+  id             String   @id @default(cuid())
+  tenantId       String
+  stripeCustomerId String?
+  stripeSubscriptionId String?
+  plan           String   @default("starter") // starter | pro | enterprise
+  status         String   @default("active") // active | canceled | past_due
+  currentPeriodEnd DateTime?
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+
+  tenant Tenant @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+
+  @@index([tenantId])
+}
+
+model ActionLog {
+  id         String   @id @default(cuid())
+  tenantId   String
+  leadId     String?  // optional: link send event to lead
+  actionType String
+  message    String
+  metadata   Json?
+  createdAt  DateTime @default(now())
+
+  tenant Tenant @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  lead   Lead?  @relation(fields: [leadId], references: [id], onDelete: SetNull)
+
+  @@index([tenantId])
+  @@index([leadId])
+}
