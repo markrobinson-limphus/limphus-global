@@ -47,7 +47,9 @@ export function ActionPipelineBar() {
         role="toolbar"
         aria-label="Quick actions"
       >
-        {ACTIONS.map(({ id, label, action, href, api, icon: Icon }) => {
+        {ACTIONS.map((item) => {
+          const { id, label, action, icon: Icon } = item;
+          const href = "href" in item ? item.href : undefined;
           const isAudit = id === "audit";
           const isLoading = isAudit && processing === "audit";
 
