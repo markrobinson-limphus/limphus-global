@@ -1,4 +1,5 @@
 import { auth } from "@clerk/nextjs/server";
+import { Prisma } from "@prisma/client";
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/db";
 import { ensureTenantForUser } from "@/lib/tenant";
@@ -114,7 +115,7 @@ export async function POST() {
       const updatePayload = {
         dmarcOk: dmarcOk ?? null,
         contactEmail: contactEmail ?? null,
-        auditStatus: "audited" as const,
+               auditResultJson: auditData,
         mapRiskScore,
         riskLevel,
         auditResultJson: auditData,
@@ -136,7 +137,7 @@ export async function POST() {
           await prisma.lead.update({
             where: { id: leadId },
             data: {
-              auditStatus: "audited",
+                            auditResultJson: { ...auditData, dbError: errMsg, dbCode: errCode ?? null } as Prisma.InputJsonValue,
               riskLevel: "MEDIUM" as RiskLevel,
               mapRiskScore: 50,
               workflowStatus: "AUDITED",
