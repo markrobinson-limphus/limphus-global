@@ -1,5 +1,6 @@
 import { auth } from "@clerk/nextjs/server";
 import { NextResponse } from "next/server";
+import { Prisma } from "@prisma/client";
 import { prisma } from "@/lib/db";
 import { ensureTenantForUser } from "@/lib/tenant";
 import { logAction } from "@/lib/actionLog";
@@ -27,7 +28,7 @@ export async function POST() {
         regulatoryRiskScore: null,
         mapRiskScore: null,
         riskLevel: null,
-        auditResultJson: null,
+        auditResultJson: Prisma.DbNull,
         httpsOk: null,
         privacyPolicyFound: null,
       },
