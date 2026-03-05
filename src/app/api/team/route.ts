@@ -1,5 +1,6 @@
 import { auth, clerkClient } from "@clerk/nextjs/server";
 import { NextResponse } from "next/server";
+import { Prisma } from "@prisma/client";
 import { prisma } from "@/lib/db";
 import { ensureTenantForUser } from "@/lib/tenant";
 
@@ -113,7 +114,7 @@ export async function GET() {
       const client = await clerkClient();
       const user = await client.users.getUser(userId);
 sovereignName = ([user.firstName, user.lastName].filter(Boolean).join(" ") || user.emailAddresses[0]?.emailAddress) ?? "Sovereign";
-(add parentheses around the part before ?? "Sovereign")
+      sovereignName = ([user.firstName, user.lastName].filter(Boolean).join(" ") || user.emailAddresses[0]?.emailAddress) ?? "Sovereign";
     } catch {
       // keep default
     }
