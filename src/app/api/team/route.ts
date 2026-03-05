@@ -112,7 +112,8 @@ export async function GET() {
     try {
       const client = await clerkClient();
       const user = await client.users.getUser(userId);
-      sovereignName = ([user.firstName, user.lastName].filter(Boolean).join(" ") || user.emailAddresses[0]?.emailAddress) ?? "Sovereign";
+sovereignName = ([user.firstName, user.lastName].filter(Boolean).join(" ") || user.emailAddresses[0]?.emailAddress) ?? "Sovereign";
+(add parentheses around the part before ?? "Sovereign")
     } catch {
       // keep default
     }
