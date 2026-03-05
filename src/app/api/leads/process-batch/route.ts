@@ -1,5 +1,6 @@
 import { auth } from "@clerk/nextjs/server";
 import { NextResponse } from "next/server";
+import { Prisma } from "@prisma/client";
 import { prisma } from "@/lib/db";
 import { ensureTenantForUser } from "@/lib/tenant";
 import { logAction } from "@/lib/actionLog";
@@ -117,7 +118,7 @@ export async function POST() {
         auditStatus: "audited" as const,
         mapRiskScore,
         riskLevel,
-        auditResultJson: auditData,
+        auditResultJson: auditData as Prisma.InputJsonValue,
         workflowStatus: "AUDITED" as const,
       };
       console.log(`>>> SOVEREIGN DEBUG Saving Lead:`, { domain, ...updatePayload });
@@ -140,7 +141,7 @@ export async function POST() {
               riskLevel: "MEDIUM" as RiskLevel,
               mapRiskScore: 50,
               workflowStatus: "AUDITED",
-              auditResultJson: { ...auditData, dbError: errMsg, dbCode: errCode ?? null },
+              auditResultJson: { ...auditData, dbError: errMsg, dbCode: errCode ?? null } as Prisma.InputJsonValue,
             },
           });
           console.log(`>>> DB UPDATE (fallback): Lead [${domain}] saved riskLevel=MEDIUM mapRiskScore=50 workflowStatus=AUDITED`);
