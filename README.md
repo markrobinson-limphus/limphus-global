@@ -98,3 +98,4 @@ Use **Neon** (Postgres) + **GitHub** (code) + **Vercel** (host). One live URL, a
 ## Money can scale with clients
 
 Pricing is configurable; tiers and amounts can be adjusted as you scale (Starter / Pro / Whale or custom).
+Deployed via Vercel.
